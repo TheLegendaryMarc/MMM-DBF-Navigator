@@ -76,21 +76,30 @@ Module.register("MMM-DBF-Navigator", {
   },
 
   mapResponse(response) {
-    return response.departures.map(item => {
-      const realDeparture = this.calculateRealDeparture(item.scheduledDeparture, item.delayDeparture)
-      return {
-        from: item.from,
-        name: item.train,
-        destination: item.destination,
-        scheduledDeparture: item.scheduledDeparture,
-        realDeparture,
-        showRealDeparture: this.isDuringNextHour(realDeparture),
-        relativeTime: this.calculateRelativeTime(realDeparture).formatted,
-        delay: item.delayDeparture,
-        cancelled: item.isCancelled != 0,
-      }
-    }).slice(0, Math.min(this.config.maxSize, response.departures.length))
-  },
+  const mappedTrains = response.departures.map(item => {
+    const realDeparture = this.calculateRealDeparture(item.scheduledDeparture, item.delayDeparture);
+    const relative = this.calculateRelativeTime(realDeparture);
+
+    return {
+      from: item.from,
+      name: item.train,
+      messages: item.messages,
+      destination: item.destination,
+      scheduledDeparture: item.scheduledDeparture,
+      realDeparture,
+      realDepartureMinutes: moment(realDeparture, "HH:mm").hours() * 60 + moment(realDeparture, "HH:mm").minutes(),
+      showRealDeparture: this.isDuringNextHour(realDeparture),
+      relativeTime: relative.formatted,
+      diffMinutes: relative.diffMinutes,
+      delay: item.delayDeparture,
+      cancelled: item.isCancelled != 0,
+    };
+  });
+
+  mappedTrains.sort((a, b) => a.realDepartureMinutes - b.realDepartureMinutes);
+
+  return mappedTrains.slice(0, Math.min(this.config.maxSize, mappedTrains.length));
+},
 
   calculateRealDeparture(timeString, delayMinutes) {
     const time = moment(timeString, "HH:mm")

@@ -1,5 +1,5 @@
 <div class="dbf-navigator-container">
-  <h2>{{from}}</h1>
+  <h2>{{from}}</h2>
   <table class="dbf-navigator-table">
     <thead>
       <tr>
@@ -9,16 +9,32 @@
         <th>{{header.train}}</th>
         <th>{{header.destination}}</th>
         <th>{{header.departure}}</th>
-        <th>{{header.in}}</th>
+        <th style="text-align: end;">{{header.in}}</th>
       </tr>
     </thead>
     <tbody>
+      {% set total = trains | length %}
+      {% set fadePoint = 0.25 %}
+
       {% for train in trains %}
-        <tr class="{{ "dbf-navigator-cancelled" if train.cancelled else "" }}">
+        {% set opacity = 1 %}
+        {% if total > 0 and fadePoint < 1 %}
+          {% set startingPoint = total * fadePoint %}
+          {% set steps = total - startingPoint %}
+          {% if loop.index0 >= startingPoint and steps > 0 %}
+            {% set currentStep = loop.index0 - startingPoint %}
+            {% set opacity = 1 - (1 / steps) * currentStep %}
+          {% endif %}
+        {% endif %}
+
+        <tr class="{{ "dbf-navigator-cancelled" if train.cancelled else "" }}"
+            style="opacity: {{ opacity }};">
           {% if displayFromColumn %}
             <td>{{ train.from }}</td>
           {% endif %}
-          <td>{{ train.name }}</td>
+          <td>
+            {{ train.name }}
+          </td>
           <td>{{ train.destination }}</td>
           <td>
             {{ train.scheduledDeparture }}
@@ -34,6 +50,30 @@
           </td>
           <td>({{ train.relativeTime }})</td>
         </tr>
+
+        <tr class="dbf-navigator-info-row"
+            style="opacity: {{ opacity }};">
+          <td colspan="5">
+            {% set delayText = train.messages.delay[0].text if train.messages and train.messages.delay[0] else "" %}
+    {% set qosText = train.messages.qos[0].text if train.messages and train.messages.qos[0] else "" %}
+    {% set messageText = "" %}
+    {% if delayText and qosText %}
+      {% set messageText = delayText ~ " +++ " ~ qosText %}
+    {% elif delayText %}
+      {% set messageText = delayText %}
+    {% elif qosText %}
+      {% set messageText = qosText %}
+    {% endif %}
+            {% if messageText %}
+              <div class="dbf-marquee">
+                <div class="dbf-marquee-inner">
+                  {{ messageText }}
+                </div>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
+</div>
