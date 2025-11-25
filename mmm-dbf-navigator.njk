@@ -12,6 +12,7 @@
         <th style="text-align: end;">{{header.in}}</th>
       </tr>
     </thead>
+
     <tbody>
       {% set total = trains | length %}
       {% set fadePoint = 0.25 %}
@@ -29,13 +30,38 @@
 
         <tr class="{{ "dbf-navigator-cancelled" if train.cancelled else "" }}"
             style="opacity: {{ opacity }};">
+
           {% if displayFromColumn %}
             <td>{{ train.from }}</td>
           {% endif %}
+
           <td>
             {{ train.name }}
           </td>
-          <td>{{ train.destination }}</td>
+
+          <td>
+            {{ train.destination }}
+
+            {% set delayText = train.messages.delay[0].text if train.messages and train.messages.delay[0] else "" %}
+            {% set qosText = train.messages.qos[0].text if train.messages and train.messages.qos[0] else "" %}
+            {% set messageText = "" %}
+            {% if delayText and qosText %}
+              {% set messageText = delayText ~ " +++ " ~ qosText %}
+            {% elif delayText %}
+              {% set messageText = delayText %}
+            {% elif qosText %}
+              {% set messageText = qosText %}
+            {% endif %}
+
+            {% if messageText %}
+              <div class="dbf-marquee">
+                <div class="dbf-marquee-inner">
+                  {{ messageText }}
+                </div>
+              </div>
+            {% endif %}
+          </td>
+
           <td>
             {{ train.scheduledDeparture }}
             {% if train.delay > 0 %}
@@ -48,30 +74,8 @@
               </span>
             {% endif %}
           </td>
-          <td>({{ train.relativeTime }})</td>
-        </tr>
 
-        <tr class="dbf-navigator-info-row"
-            style="opacity: {{ opacity }};">
-          <td colspan="5">
-            {% set delayText = train.messages.delay[0].text if train.messages and train.messages.delay[0] else "" %}
-    {% set qosText = train.messages.qos[0].text if train.messages and train.messages.qos[0] else "" %}
-    {% set messageText = "" %}
-    {% if delayText and qosText %}
-      {% set messageText = delayText ~ " +++ " ~ qosText %}
-    {% elif delayText %}
-      {% set messageText = delayText %}
-    {% elif qosText %}
-      {% set messageText = qosText %}
-    {% endif %}
-            {% if messageText %}
-              <div class="dbf-marquee">
-                <div class="dbf-marquee-inner">
-                  {{ messageText }}
-                </div>
-              </div>
-            {% endif %}
-          </td>
+          <td>({{ train.relativeTime }})</td>
         </tr>
       {% endfor %}
     </tbody>

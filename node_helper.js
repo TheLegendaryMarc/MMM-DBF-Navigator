@@ -24,7 +24,7 @@ function sort(a, b) {
 }
 
 function fetchTrainData(from, via) {
-  return fetch(`https://dbf.finalrewind.org/${from}?platforms=&via=${via}&hide_opts=1&admode=dep&mode=json&version=3`)
+  return fetch(`https://dbf.finalrewind.org/${from}?platforms=&via=${via}&hide_opts=1&admode=dep&mode=json&version=3&limit=10`)
     .then(response => response.json())
     .then(data => data.departures || [])
     .then(data => data.map(item => ({

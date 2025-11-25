@@ -77,8 +77,12 @@ Module.register("MMM-DBF-Navigator", {
 
   mapResponse(response) {
   const mappedTrains = response.departures.map(item => {
-    const realDeparture = this.calculateRealDeparture(item.scheduledDeparture, item.delayDeparture);
+    const realDeparture = this.calculateRealDeparture(item.scheduledDeparture, item.delayDeparture)
     const relative = this.calculateRelativeTime(realDeparture);
+
+    const now = moment();
+    const dep = moment(realDeparture, "HH:mm");
+    if (dep.isBefore(now)) dep.add(1, "day");
 
     return {
       from: item.from,
@@ -87,7 +91,7 @@ Module.register("MMM-DBF-Navigator", {
       destination: item.destination,
       scheduledDeparture: item.scheduledDeparture,
       realDeparture,
-      realDepartureMinutes: moment(realDeparture, "HH:mm").hours() * 60 + moment(realDeparture, "HH:mm").minutes(),
+      realDepartureMinutes: dep.diff(now, "minutes"),
       showRealDeparture: this.isDuringNextHour(realDeparture),
       relativeTime: relative.formatted,
       diffMinutes: relative.diffMinutes,
