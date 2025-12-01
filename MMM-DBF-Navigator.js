@@ -87,7 +87,6 @@ Module.register("MMM-DBF-Navigator", {
     return {
       from: item.from,
       name: item.train,
-      messages: item.messages,
       destination: item.destination,
       scheduledDeparture: item.scheduledDeparture,
       realDeparture,

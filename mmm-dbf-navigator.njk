@@ -41,25 +41,6 @@
 
           <td>
             {{ train.destination }}
-
-            {% set delayText = train.messages.delay[0].text if train.messages and train.messages.delay[0] else "" %}
-            {% set qosText = train.messages.qos[0].text if train.messages and train.messages.qos[0] else "" %}
-            {% set messageText = "" %}
-            {% if delayText and qosText %}
-              {% set messageText = delayText ~ " +++ " ~ qosText %}
-            {% elif delayText %}
-              {% set messageText = delayText %}
-            {% elif qosText %}
-              {% set messageText = qosText %}
-            {% endif %}
-
-            {% if messageText %}
-              <div class="dbf-marquee">
-                <div class="dbf-marquee-inner">
-                  {{ messageText }}
-                </div>
-              </div>
-            {% endif %}
           </td>
 
           <td>

@@ -62,39 +62,3 @@
 .dbf-navigator-container table th {
   vertical-align: middle;
 }
-
-
-.dbf-navigator-info-row td {
-  padding-top: 0;
-  padding-bottom: 4px;
-  font-size: 0.75em;
-  opacity: 0.7;
-}
-
-
-.dbf-marquee {
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  color: #ceff99;
-  font-size: 0.75em;
-  line-height: 1.3em;
-}
-
-
-.dbf-marquee-inner {
-  display: inline-block;
-  padding-left: 100%;
-  animation: dbf-marquee-scroll 20s linear infinite;
-}
-
-
-@keyframes dbf-marquee-scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
